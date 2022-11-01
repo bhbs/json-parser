@@ -1,14 +1,36 @@
-pub fn add(left: usize, right: usize) -> usize {
-    left + right
+mod lexer;
+mod parser;
+
+use crate::lexer::Lexer;
+use crate::parser::{Parser, ParserError};
+
+pub fn exec() {
+    let object = match Lexer::new(
+        r#"
+            {
+                "number": 123,
+                "boolean": true,
+                "string": "togatoga",
+                "object": {
+                "number": 2E10
+                }
+            }
+        "#,
+    )
+    .tokenize()
+    {
+        Ok(tokens) => Parser::new(tokens).parse(),
+        Err(e) => Err(ParserError::new(&e.msg)),
+    };
+    println!("{:?}", object.unwrap());
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+mod exec_tests {
+    use super::exec;
 
     #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
+    fn exec_test() {
+        exec();
     }
 }
